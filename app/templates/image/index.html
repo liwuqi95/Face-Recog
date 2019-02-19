@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<div class="row">
+    {% for image in images %}
+
+    <header>
+        <div>
+            <h1>{{ image['name'] }}</h1>
+            <div class="about">by {{ image['username'] }} on {{ image['created'].strftime('%Y-%m-%d') }}</div>
+        </div>
+        {% if g.user['id'] == image['user_id'] %}
+        <a class="action" href="{{ url_for('image.update', id=image['id']) }}">Edit</a>
+        {% endif %}
+    </header>
+    </article>
+    {% if not loop.last %}
+    <hr>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endblock %}
