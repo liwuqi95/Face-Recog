@@ -105,12 +105,13 @@ def create():
 
             cursor = get_db().cursor()
             cursor.execute('INSERT INTO images ( name, user_id) VALUES (%s, %s)', (filename, g.user['id']))
-            filename = str(cursor.lastrowid) + '.' + filename.rsplit('.', 1)[1].lower()
+            id = cursor.lastrowid
+            filename = str(id) + '.' + filename.rsplit('.', 1)[1].lower()
             file.save(os.path.join('app/images', filename))
             get_db().commit()
             save_thumbnail(filename, 100, 100)
             draw_face_rectangle(filename)
-            return redirect(url_for('image.index'))
+            return redirect(url_for('image.show', id=id))
 
         if error is not None:
             flash(error)

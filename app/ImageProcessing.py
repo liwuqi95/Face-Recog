@@ -31,12 +31,12 @@ def draw_face_rectangle(image_name):
     bool: True if at least one face was detected
     '''
 
-    face_cascade = cv.CascadeClassifier('./data/haarcascade_frontalface_default.xml')
+    face_cascade = cv.CascadeClassifier('app/data/haarcascade_frontalface_default.xml')
     img = cv.imread('app/images/' + image_name)
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     faces = face_cascade.detectMultiScale(gray, 1.3, 5)
 
-    if faces.size() == 0:
+    if len(faces) == 0:
         return False
 
     for (x,y,w,h) in faces:
