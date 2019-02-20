@@ -36,7 +36,7 @@ def draw_face_rectangle(image_name):
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     faces = face_cascade.detectMultiScale(gray, 1.3, 5)
 
-    if len(faces) == 0:
+    if faces.size == 0:
         return False
 
     for (x,y,w,h) in faces:

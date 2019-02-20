@@ -109,7 +109,7 @@ def create():
             filename = str(id) + '.' + filename.rsplit('.', 1)[1].lower()
             file.save(os.path.join('app/images', filename))
             get_db().commit()
-            save_thumbnail(filename, 100, 100)
+            save_thumbnail(filename, 200, 200)
             draw_face_rectangle(filename)
             return redirect(url_for('image.show', id=id))
 
@@ -117,35 +117,6 @@ def create():
             flash(error)
 
     return render_template('image/create.html')
-
-
-@bp.route('/<int:id>/update', methods=('GET', 'POST'))
-@login_required
-def update(id):
-    """Update a post if the current user is the author."""
-    post = get_post(id)
-
-    if request.method == 'POST':
-        title = request.form['title']
-        body = request.form['body']
-        error = None
-
-        if not title:
-            error = 'Title is required.'
-
-        if error is not None:
-            flash(error)
-        else:
-            db = get_db()
-            db.execute(
-                'UPDATE post SET title = ?, body = ? WHERE id = ?',
-                (title, body, id)
-            )
-            db.commit()
-            return redirect(url_for('blog.index'))
-
-    return render_template('blog/update.html', post=post)
-
 
 @bp.route('/<int:id>/delete', methods=('POST',))
 @login_required
