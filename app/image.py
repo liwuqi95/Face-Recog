@@ -1,10 +1,14 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, flash, g, redirect, render_template, request, url_for, send_from_directory
 )
 from werkzeug.exceptions import abort
 
 from app.auth import login_required
 from app.db import get_db
+
+import os
+
+from app.ImageProcessing import save_thumbnail
 
 bp = Blueprint('image', __name__)
 
@@ -13,13 +17,44 @@ bp = Blueprint('image', __name__)
 @login_required
 def index():
     """Show all the images, most recent first."""
-    db = get_db()
-    images = db.execute(
-        'SELECT p.id, name, created, user_id, username'
-        ' FROM image p JOIN user u ON p.user_id = u.id'
-        ' ORDER BY created DESC'
-    ).fetchall()
+    cursor = get_db().cursor(dictionary=True)
+
+    cursor.execute(
+        'SELECT p.id as id, name, created, user_id, username'
+        ' FROM images p JOIN users u ON p.user_id = u.id'
+        ' WHERE p.user_id = %s '
+        ' ORDER BY created DESC', (g.user['id'],)
+    )
+
+    images = cursor.fetchall()
+
+
     return render_template('image/index.html', images=images)
+
+
+@bp.route('/images/<int:type>/<int:id>')
+@login_required
+def get_image(type, id):
+    cursor = get_db().cursor(dictionary=True)
+
+    cursor.execute(
+        'SELECT p.id, name, user_id'
+        ' FROM images p'
+        ' WHERE p.id = %s',
+        (id,))
+
+    image = cursor.fetchone()
+
+    if image is None:
+        abort(404, "Image doesn't exist.".format(id))
+
+    if image['user_id'] != g.user['id']:
+        abort(403)
+
+    dir = 'images'
+
+    return send_from_directory(dir, str(image["id"]) + '.' + image["name"].rsplit('.', 1)[1])
+
 
 def get_post(id, check_author=True):
     """Get a post and its author by id.
@@ -47,31 +82,42 @@ def get_post(id, check_author=True):
     return post
 
 
+##TODO add more image types
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
     """Create a new post for the current user."""
     if request.method == 'POST':
-        title = request.form['title']
-        body = request.form['body']
         error = None
 
-        if not title:
-            error = 'Title is required.'
+        if 'file' not in request.files:
+            error = 'You cannot upload empty file.'
+        elif request.files['file'].filename == '':
+            error = "Your file name is not valid."
+        elif not allowed_file(request.files['file'].filename):
+            error = "Your File format is not correct."
+        else:
+            file = request.files['file']
+            filename = file.filename
+
+            cursor = get_db().cursor()
+            cursor.execute('INSERT INTO images ( name, user_id) VALUES (%s, %s)', (filename, g.user['id']))
+            file.save(os.path.join('app/images', str(cursor.lastrowid) + '.' + filename.rsplit('.', 1)[1].lower()))
+            get_db().commit()
+            return redirect(url_for('image.index'))
 
         if error is not None:
             flash(error)
-        else:
-            db = get_db()
-            db.execute(
-                'INSERT INTO post (title, body, author_id)'
-                ' VALUES (?, ?, ?)',
-                (title, body, g.user['id'])
-            )
-            db.commit()
-            return redirect(url_for('blog.index'))
 
-    return render_template('blog/create.html')
+    return render_template('image/create.html')
 
 
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))

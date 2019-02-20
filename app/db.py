@@ -1,29 +1,42 @@
-import sqlite3
+import mysql.connector
 
 import click
 from flask import current_app, g
 from flask.cli import with_appcontext
 
+TABLES = {}
+
+TABLES['users'] = (
+    "CREATE TABLE `users` ("
+    "  `id` int(11) NOT NULL AUTO_INCREMENT,"
+    "  `username` varchar(255) NOT NULL,"
+    "  `password` varchar(255) NOT NULL,"
+    "  PRIMARY KEY (`id`),"
+    " UNIQUE (username)"
+    ")")
+
+TABLES['images'] = (
+    "CREATE TABLE `images` ("
+    "  `id` int(11) NOT NULL AUTO_INCREMENT,"
+    "  `user_id` int(11) NOT NULL,"
+    "  `name` varchar(255) NOT NULL,"
+    "   `created` DATETIME DEFAULT CURRENT_TIMESTAMP,"
+    "  PRIMARY KEY (`id`), KEY `user_id` (`user_id`),"
+    "  CONSTRAINT `image_usrfk_1` FOREIGN KEY (`user_id`) "
+    "  REFERENCES `users` (`id`) ON DELETE CASCADE"
+    ")")
+
 
 def get_db():
-    """Connect to the application's configured database. The connection
-    is unique for each request and will be reused if this is called
-    again.
-    """
     if 'db' not in g:
-        g.db = sqlite3.connect(
-            current_app.config['DATABASE'],
-            detect_types=sqlite3.PARSE_DECLTYPES
-        )
-        g.db.row_factory = sqlite3.Row
+        g.db = mysql.connector.connect(user='root', password='ece1779pass',
+                                       host='127.0.0.1',
+                                       database='cloud')
 
     return g.db
 
 
 def close_db(e=None):
-    """If this request connected to the database, close the
-    connection.
-    """
     db = g.pop('db', None)
 
     if db is not None:
@@ -31,11 +44,13 @@ def close_db(e=None):
 
 
 def init_db():
-    """Clear existing data and create new tables."""
-    db = get_db()
+    cursor = get_db().cursor()
 
-    with current_app.open_resource('schema.sql') as f:
-        db.executescript(f.read().decode('utf8'))
+    cursor.execute("DROP TABLE IF EXISTS images;")
+    cursor.execute("DROP TABLE IF EXISTS users;")
+
+    for table_name in TABLES:
+        cursor.execute(TABLES[table_name])
 
 
 @click.command('init-db')

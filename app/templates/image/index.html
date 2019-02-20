@@ -3,22 +3,37 @@
 
 {% block content %}
 
-<div class="row">
-    {% for image in images %}
 
-    <header>
-        <div>
-            <h1>{{ image['name'] }}</h1>
-            <div class="about">by {{ image['username'] }} on {{ image['created'].strftime('%Y-%m-%d') }}</div>
-        </div>
-        {% if g.user['id'] == image['user_id'] %}
-        <a class="action" href="{{ url_for('image.update', id=image['id']) }}">Edit</a>
+<h4>My Album
+
+
+    <div style="float: right">
+        <a href="{{  url_for('image.create')  }}" class="btn btn-outline-success">Add New Image</a>
+    </div>
+
+</h4>
+
+
+<div class="row">
+
+    <div class="col-md-12">
+        {% if images|length == 0 %}
+        <p class="text-center" style="margin-top: 20%;">You do not have any image currently, upload now!</p>
         {% endif %}
-    </header>
-    </article>
-    {% if not loop.last %}
-    <hr>
-    {% endif %}
+    </div>
+
+    {% for image in images %}
+    <div class="col-md-3 d-flex align-items-stretch" style="margin-top: 20px;">
+        <div class="card">
+            <div class="card-body">
+                <img src="{{ url_for('image.get_image', id=image['id'], type=0) }}" class="card-img-top" width="80%">
+                <h6 class="card-title">{{ image['name'] }}</h6>
+                <a href="#" class="btn btn-primary">View</a>
+            </div>
+        </div>
+    </div>
     {% endfor %}
+</div>
+
 </div>
 {% endblock %}

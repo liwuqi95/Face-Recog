@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<div class="row">
+    <div class="col-lg-6 offset-md-3">
+
+        <div class="card" style="margin-top: 20%">
+            <div class="card-body">
+                <div class="text-center">
+                    <h4>Upload a New Image</h4>
+                </div>
+
+                <form style="margin: 15px 10px" method="post" enctype=multipart/form-data>
+                    <div class="input-default-wrapper mt-3">
+                        <input type="file" name="file">
+                    </div>
+
+                    <div class="text-center" style="margin-top: 20px">
+                        <button type="submit" class="btn btn-success">Upload</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

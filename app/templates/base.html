@@ -4,6 +4,8 @@
     <title>{% block title %}{% endblock %} - Flaskr</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+          integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
             integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
             crossorigin="anonymous"></script>
@@ -16,7 +18,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="margin-bottom: 10px;">
     <a class="navbar-brand" href="#">
         <img src="{{ url_for('static', filename='logo.png') }}" width="30" height="30" class="d-inline-block align-top"
              alt="">
@@ -30,18 +32,18 @@
             </li>
         </ul>
         {% endif %}
-
-        <div class="form-inline my-2 my-lg-0">
-            {% if g.user %}
-            <span style="color:white; margin-right: 10px;">{{ g.user['username'] }}</span>
-            <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">Log Out</a>
-            {% else %}
-            <a href="{{ url_for('auth.register') }}" class="btn btn-outline-success"
-               style="margin-right: 10px;">Register</a>
-            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">Log In</a>
-            {% endif %}
-        </div>
     </div>
+    <div class="form-inline my-2 my-lg-0">
+        {% if g.user %}
+        <span style="color:white; margin-right: 10px;">{{ g.user['username'] }}</span>
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">Log Out</a>
+        {% else %}
+        <a href="{{ url_for('auth.register') }}" class="btn btn-outline-success"
+           style="margin-right: 10px;">Register</a>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">Log In</a>
+        {% endif %}
+    </div>
+
     </div>
 </nav>
 
