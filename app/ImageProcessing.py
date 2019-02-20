@@ -14,11 +14,11 @@ def save_thumbnail(image_name, frame_width, frame_height):
     return:
     '''
 
-    with wand.image.Image(filename='./images/' + image_name) as img:
+    with wand.image.Image(filename='app/images/' + image_name) as img:
         img.strip()
         img.sample(int(img.width/5), int(img.height/5))
         img.transform(resize='{}x{}>'.format(frame_width, frame_height))
-        img.save(filename='thumbnails/' + image_name)
+        img.save(filename='app/thumbnails/' + image_name)
 
 def draw_face_rectangle(image_name):
     '''
@@ -32,7 +32,7 @@ def draw_face_rectangle(image_name):
     '''
 
     face_cascade = cv.CascadeClassifier('./data/haarcascade_frontalface_default.xml')
-    img = cv.imread('./images/' + image_name)
+    img = cv.imread('app/images/' + image_name)
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     faces = face_cascade.detectMultiScale(gray, 1.3, 5)
 
@@ -45,10 +45,10 @@ def draw_face_rectangle(image_name):
     # cv.imshow('img', img)
     # cv.waitKey()
 
-    cv.imwrite('./faces/' + image_name, img)
+    cv.imwrite('app/faces/' + image_name, img)
     return True
 
-if __name__ == '__main__':
-    # example usage:
-    # save_thumbnail('duck.png', 160, 120)
-    # draw_face_rectangle('trump.jpg')
+# if __name__ == '__main__':
+#     # example usage:
+#     # save_thumbnail('duck.png', 160, 120)
+#     # draw_face_rectangle('trump.jpg')

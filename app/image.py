@@ -8,7 +8,7 @@ from app.db import get_db
 
 import os
 
-from app.ImageProcessing import save_thumbnail
+from app.ImageProcessing import save_thumbnail, draw_face_rectangle
 
 bp = Blueprint('image', __name__)
 
@@ -27,7 +27,6 @@ def index():
     )
 
     images = cursor.fetchall()
-
 
     return render_template('image/index.html', images=images)
 
@@ -51,35 +50,31 @@ def get_image(type, id):
     if image['user_id'] != g.user['id']:
         abort(403)
 
-    dir = 'images'
+    dir = 'images' if type == 0 else ('thumbnails' if type == 1 else 'faces')
 
     return send_from_directory(dir, str(image["id"]) + '.' + image["name"].rsplit('.', 1)[1])
 
 
-def get_post(id, check_author=True):
-    """Get a post and its author by id.
-    Checks that the id exists and optionally that the current user is
-    the author.
-    :param id: id of post to get
-    :param check_author: require the current user to be the author
-    :return: the post with author information
-    :raise 404: if a post with the given id doesn't exist
-    :raise 403: if the current user isn't the author
-    """
-    post = get_db().execute(
-        'SELECT p.id, title, body, created, author_id, username'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' WHERE p.id = ?',
-        (id,)
-    ).fetchone()
+@bp.route('/image/<int:id>')
+@login_required
+def show(id):
+    cursor = get_db().cursor(dictionary=True)
 
-    if post is None:
-        abort(404, "Post id {0} doesn't exist.".format(id))
+    cursor.execute(
+        'SELECT p.id, name, user_id, created'
+        ' FROM images p'
+        ' WHERE p.id = %s',
+        (id,))
 
-    if check_author and post['author_id'] != g.user['id']:
+    image = cursor.fetchone()
+
+    if image is None:
+        abort(404, "Image doesn't exist.".format(id))
+
+    if image['user_id'] != g.user['id']:
         abort(403)
 
-    return post
+    return render_template('image/show.html', image=image)
 
 
 ##TODO add more image types
@@ -110,8 +105,11 @@ def create():
 
             cursor = get_db().cursor()
             cursor.execute('INSERT INTO images ( name, user_id) VALUES (%s, %s)', (filename, g.user['id']))
-            file.save(os.path.join('app/images', str(cursor.lastrowid) + '.' + filename.rsplit('.', 1)[1].lower()))
+            filename = str(cursor.lastrowid) + '.' + filename.rsplit('.', 1)[1].lower()
+            file.save(os.path.join('app/images', filename))
             get_db().commit()
+            save_thumbnail(filename, 100, 100)
+            draw_face_rectangle(filename)
             return redirect(url_for('image.index'))
 
         if error is not None:

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+
+<div class="row" style="padding-top: 20px;">
+
+    <div class="col-md-6 text-center">
+
+        <h6>{{image["name"]}}</h6>
+
+        <img src="{{ url_for('image.get_image', id=image['id'], type=0) }}" width="100%">
+
+    </div>
+
+
+    <div class="col-md-6 text-center">
+
+        <h6>Face Detection Result</h6>
+        <img src="{{ url_for('image.get_image', id=image['id'], type=2) }}" width="100%"
+             Alt="We cannot find any Face in your image.">
+    </div>
+
+</div>
+
+<div class="row" style="margin-top: 30px">
+    <div class="col-md-12">
+
+        <p> Created At: {{image["created"]}}</p>
+        <p>
+            <a href="{{ url_for('image.index')}}" class="btn btn-outline-primary"> Back to Album </a>
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}
