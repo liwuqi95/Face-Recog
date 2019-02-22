@@ -47,6 +47,10 @@ def register():
         cursor = get_db().cursor()
         error = None
 
+        if '\'' in password or '\"' in password:
+            error = 'Password cannot contain quotation marks.'
+        if '\'' in username or '\"' in username:
+            error = 'Username cannot contain quotation marks.'
         if not password2 == password:
             error = 'Password is not matching with password confirmation.'
         if not username:

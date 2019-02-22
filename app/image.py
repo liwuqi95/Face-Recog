@@ -105,19 +105,26 @@ def create():
             error = "Your file name is not valid."
         elif not allowed_file(request.files['file'].filename):
             error = "Your File format is not correct."
+        elif '\'' in request.files['file'].filename or '\"' in request.files['file'].filename:
+            error = "Invalid file name."
         else:
             file = request.files['file']
             filename = file.filename
-
             cursor = get_db().cursor()
             cursor.execute('INSERT INTO images ( name, user_id) VALUES (%s, %s)', (filename, g.user['id']))
             id = cursor.lastrowid
             filename = str(id) + '.' + filename.rsplit('.', 1)[1].lower()
             file.save(os.path.join('app/images', filename))
-            get_db().commit()
-            save_thumbnail(filename, 200, 200)
-            draw_face_rectangle(filename)
-            return redirect(url_for('image.show', id=id))
+            
+            try:
+                draw_face_rectangle(filename)
+                save_thumbnail(filename, 200, 200)
+                get_db().commit()
+                return redirect(url_for('image.show', id=id))
+
+            except:
+                error = "Error creating image."
+                os.remove(os.path.join('app/images', filename))
 
         if error is not None:
             flash(error)
