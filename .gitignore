@@ -5,3 +5,4 @@ app/faces
 app/__pycache__
 app/.DS_Store
 .DS_Store
+venv/
