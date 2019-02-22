@@ -25,9 +25,14 @@
     {% for image in images %}
     <div class="col-md-3 d-flex align-items-stretch" style="margin-top: 20px;">
         <div class="card" style="width: 100%">
+            <div class="card-header">
+                <p class="card-title">{{ image['name'] }}</p>
+            </div>
             <div class="card-body">
-                <img src="{{ url_for('image.get_image', id=image['id'], type=1) }}" class="card-img-top" width="80%">
-                <h6 class="card-title">{{ image['name'] }}</h6>
+                <img src="{{ url_for('image.get_image', id=image['id'], type=1) }}" class="card-img-top" width="80%"
+                     style="    top: 50%; left:50%;transform: translate(-50%, -50%); position: relative;">
+            </div>
+            <div class="card-footer text-muted text-center">
                 <a href="{{url_for('image.show', id=image['id'])}}" class="btn btn-outline-primary">View</a>
             </div>
         </div>
