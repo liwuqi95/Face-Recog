@@ -34,6 +34,11 @@ def index():
 @bp.route('/images/<int:type>/<int:id>')
 @login_required
 def get_image(type, id):
+    """
+    Return a image file specified by the id and type
+    id: image id
+    type: 0 means thumb, 1 means original image, 2 means the image with face recognition
+    """
     cursor = get_db().cursor(dictionary=True)
 
     cursor.execute(
@@ -58,6 +63,7 @@ def get_image(type, id):
 @bp.route('/image/<int:id>')
 @login_required
 def show(id):
+    """Show image details by given id"""
     cursor = get_db().cursor(dictionary=True)
 
     cursor.execute(
@@ -89,7 +95,7 @@ def allowed_file(filename):
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
-    """Create a new post for the current user."""
+    """Create a new image for the current user."""
     if request.method == 'POST':
         error = None
 

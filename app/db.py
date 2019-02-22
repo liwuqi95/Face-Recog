@@ -28,6 +28,7 @@ TABLES['images'] = (
 
 
 def get_db():
+    """return current connection or create a new one"""
     if 'db' not in g:
         g.db = mysql.connector.connect(user='root', password='ece1779pass',
                                        host='127.0.0.1',
@@ -37,6 +38,7 @@ def get_db():
 
 
 def close_db(e=None):
+    """Close mysql db connection"""
     db = g.pop('db', None)
 
     if db is not None:
@@ -44,6 +46,7 @@ def close_db(e=None):
 
 
 def init_db():
+    """Perform init db Mysql operations"""
     cursor = get_db().cursor()
 
     cursor.execute("DROP TABLE IF EXISTS images;")

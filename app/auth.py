@@ -25,6 +25,7 @@ def login_required(view):
 
 @bp.before_app_request
 def load_logged_in_user():
+    """load current user from session"""
     user_id = session.get('user_id')
 
     if user_id is None:
@@ -37,10 +38,7 @@ def load_logged_in_user():
 
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
-    """Register a new user.
-    Validates that the username is not already taken. Hashes the
-    password for security.
-    """
+    """Register a new user and validates its username and password"""
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -77,6 +75,7 @@ def register():
 
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
+    """handle login request and create a new session for him"""
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -102,5 +101,6 @@ def login():
 
 @bp.route('/logout')
 def logout():
+    """clear login session"""
     session.clear()
     return redirect(url_for('image.index'))

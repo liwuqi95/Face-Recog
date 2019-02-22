@@ -15,6 +15,14 @@ bp = Blueprint('api', __name__, url_prefix='/api')
 
 @bp.route('/register', methods=['POST'])
 def register():
+    '''
+    handle requests to api/register
+
+    params:
+    username and password
+
+    return: ok if success, otherwise a error message will be returned with request content type
+    '''
     username = request.form['username']
     password = request.form['password']
 
@@ -52,6 +60,14 @@ def allowed_file(filename):
 
 @bp.route('/upload', methods=['POST'])
 def upload():
+    '''
+    handle requests to api/upload
+
+    params:
+    username, password and the file content
+
+    return: ok if success, otherwise a error message will be returned with request content type
+    '''
     error = None
     username = request.form['username']
     password = request.form['password']
