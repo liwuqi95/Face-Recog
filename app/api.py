@@ -50,7 +50,7 @@ def register():
 
 
 ##TODO add more image types
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'jp2', 'bmp', 'ppm', 'pgm', 'pbm', 'tiff'])
 
 
 def allowed_file(filename):
