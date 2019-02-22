@@ -74,7 +74,7 @@ def upload():
     elif request.files['file'].filename == '':
         error = "Your file name is not valid."
     elif not allowed_file(request.files['file'].filename):
-        error = "Your File format is not correct."
+        error = "Your File format is not correct: {}".format(request.files['file'].filename)
     else:
         file = request.files['file']
         filename = file.filename
