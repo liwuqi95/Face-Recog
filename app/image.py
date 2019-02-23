@@ -115,13 +115,11 @@ def create():
             id = cursor.lastrowid
             filename = str(id) + '.' + filename.rsplit('.', 1)[1].lower()
             file.save(os.path.join('app/images', filename))
-            
             try:
                 draw_face_rectangle(filename)
                 save_thumbnail(filename, 200, 200)
                 get_db().commit()
                 return redirect(url_for('image.show', id=id))
-
             except:
                 error = "Error creating image."
                 os.remove(os.path.join('app/images', filename))
